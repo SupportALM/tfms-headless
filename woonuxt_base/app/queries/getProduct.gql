@@ -20,16 +20,6 @@ query getProduct($slug: ID!) {
         ...ShortProduct
       }
     }
-    crossSell(first: 5) {
-      nodes {
-        ...ShortProduct
-      }
-    }
-    ... on NodeWithFeaturedImage {
-      image {
-        ...Image
-      }
-    }
     galleryImages {
       nodes {
         ...Image
