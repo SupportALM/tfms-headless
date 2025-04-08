@@ -14,11 +14,49 @@ query getProduct($slug: ID!) {
     description
     rawDescription: description(format: RAW)
     shortDescription
-    ...ProductWithAttributes
+    ... on ProductWithAttributes {
+      attributes {
+        nodes {
+          attributeId
+          id
+          label
+          name
+          options
+          position
+          variation
+          visible
+        }
+      }
+    }
+    ... on VariableProduct {
+      attributes {
+        nodes {
+          attributeId
+          id
+          label
+          name
+          options
+          position
+          variation
+          visible
+        }
+      }
+      defaultAttributes {
+        nodes {
+          attributeId
+          id
+          label
+          name
+          options
+          position
+          variation
+          visible
+        }
+      }
+    }
     ...ProductCategories
     ...Terms
     ...SimpleProduct
-    ...VariableProduct
     ...ExternalProduct
     related(first: 5) {
       nodes {
