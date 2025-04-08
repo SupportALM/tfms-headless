@@ -38,4 +38,4 @@ query getProduct($slug: ID!) {
   }
 }
 
-// Fragment definitions removed - they should be imported from separate files.
+# Fragment definitions removed - they should be imported from separate files.
