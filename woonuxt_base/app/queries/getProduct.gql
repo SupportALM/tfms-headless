@@ -6,13 +6,6 @@ query getProduct($slug: ID!) {
     description
     rawDescription: description(format: RAW)
     shortDescription
-    ... on ProductWithAttributes {
-      # attributes field removed due to schema mismatch
-    }
-    ... on VariableProduct {
-      # attributes field removed due to schema mismatch
-      # defaultAttributes block removed due to schema mismatch
-    }
     ...ProductCategories
     ...Terms
     ...SimpleProduct
