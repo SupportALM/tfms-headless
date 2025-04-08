@@ -1,58 +1,17 @@
 query getProduct($slug: ID!) {
   product(id: $slug, idType: SLUG) {
-    name
-    type
-    databaseId
     id
-    metaData {
-      id
-      key
-      value
-    }
-    slug
-    sku
+    productId: databaseId
+    name
     description
     rawDescription: description(format: RAW)
     shortDescription
     ... on ProductWithAttributes {
-      attributes {
-        nodes {
-          attributeId
-          id
-          label
-          name
-          options
-          position
-          variation
-          visible
-        }
-      }
+      # attributes field removed due to schema mismatch
     }
     ... on VariableProduct {
-      attributes {
-        nodes {
-          attributeId
-          id
-          label
-          name
-          options
-          position
-          variation
-          visible
-        }
-      }
-      defaultAttributes {
-        nodes {
-          attributeId
-          id
-          label
-          name
-          options
-          position
-          variation
-          visible
-        }
-      }
+      # attributes field removed due to schema mismatch
+      # defaultAttributes block removed due to schema mismatch
     }
     ...ProductCategories
     ...Terms
@@ -60,60 +19,158 @@ query getProduct($slug: ID!) {
     ...ExternalProduct
     related(first: 5) {
       nodes {
-        ...SimpleProduct
-        ...VariableProduct
-        ...ExternalProduct
+        ...ShortProduct
       }
     }
-    reviews {
-      averageRating
-      edges {
-        rating
-        node {
-          ...Comment
+    upsell(first: 5) {
+      nodes {
+        ...ShortProduct
+      }
+    }
+    crossSell(first: 5) {
+      nodes {
+        ...ShortProduct
+      }
+    }
+    ... on NodeWithFeaturedImage {
+      image {
+        ...Image
+      }
+    }
+    galleryImages {
+      nodes {
+        ...Image
+      }
+    }
+  }
+}
+
+fragment ProductCategories on Product {
+  productCategories {
+    nodes {
+      id
+      name
+      slug
+    }
+  }
+}
+
+fragment SimpleProduct on SimpleProduct {
+  price(format: RAW)
+  regularPrice(format: RAW)
+  salePrice(format: RAW)
+  stockStatus
+  stockQuantity
+  onSale
+  manageStock
+  image {
+    ...Image
+  }
+}
+
+fragment VariableProduct on VariableProduct {
+  price(format: RAW)
+  regularPrice(format: RAW)
+  salePrice(format: RAW)
+  stockStatus
+  stockQuantity
+  onSale
+  manageStock
+  image {
+    ...Image
+  }
+  variations {
+    nodes {
+      id
+      databaseId
+      name
+      description
+      price(format: RAW)
+      regularPrice(format: RAW)
+      salePrice(format: RAW)
+      onSale
+      stockStatus
+      stockQuantity
+      image {
+        ...Image
+      }
+      attributes {
+        nodes {
+          id
+          name
+          value
+          attributeId
         }
       }
     }
   }
 }
 
-fragment ProductWithAttributes on ProductWithAttributes {
-  attributes {
-    nodes {
-      ...ProductAttribute
-    }
-  }
+fragment ExternalProduct on ExternalProduct {
+  price(format: RAW)
+  regularPrice(format: RAW)
+  salePrice(format: RAW)
+  buttonText
+  externalUrl
 }
 
-fragment ProductAttribute on ProductAttribute {
-  variation
+fragment ShortProduct on Product {
+  id
+  databaseId
   name
-  id
-  options
-  label
-  scope
-  ... on GlobalProductAttribute {
-    terms {
+  slug
+  ... on NodeWithFeaturedImage {
+    image {
+      id
+      sourceUrl(size: WOOCOMMERCE_THUMBNAIL)
+      altText
+    }
+  }
+  ... on SimpleProduct {
+    price(format: RAW)
+    regularPrice(format: RAW)
+    salePrice(format: RAW)
+    stockStatus
+    stockQuantity
+    onSale
+  }
+  ... on VariableProduct {
+    price(format: RAW)
+    regularPrice(format: RAW)
+    salePrice(format: RAW)
+    stockStatus
+    stockQuantity
+    onSale
+  }
+  ... on ExternalProduct {
+    price(format: RAW)
+    regularPrice(format: RAW)
+    salePrice(format: RAW)
+  }
+  ... on GroupProduct {
+    products {
       nodes {
-        name
-        slug
-        taxonomyName
-        databaseId
+        ... on SimpleProduct {
+          price(format: RAW)
+          regularPrice(format: RAW)
+          salePrice(format: RAW)
+        }
       }
     }
   }
 }
 
-fragment Comment on Comment {
-  content
-  id
-  date
-  author {
-    node {
+fragment Terms on Product {
+  terms {
+    nodes {
+      id
       name
-      avatar {
-        url
-      }
+      slug
+      taxonomyName
     }
   }
 }
+
+# fragment ProductWithAttributes on ProductWithAttributes {
+#   # Removing this fragment content as attributes query caused errors
+# }
